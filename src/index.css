@@ -1,0 +1,80 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  color-scheme: dark;
+}
+
+@layer base {
+  body {
+    @apply font-sans text-slate-100 bg-ink-900 min-h-screen;
+    background-image:
+      radial-gradient(circle at top left, rgba(45, 212, 191, 0.16), transparent 45%),
+      radial-gradient(circle at 20% 80%, rgba(249, 115, 22, 0.16), transparent 45%),
+      linear-gradient(120deg, rgba(15, 23, 42, 0.98), rgba(2, 6, 23, 0.98));
+    background-attachment: fixed;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4 {
+    @apply font-display tracking-tight;
+  }
+}
+
+@layer components {
+  .glass-panel {
+    @apply bg-ink-800/70 border border-white/10 rounded-2xl shadow-card;
+    backdrop-filter: blur(18px);
+  }
+
+  .card-surface {
+    @apply bg-ink-700/70 border border-white/10 rounded-2xl shadow-card;
+  }
+
+  .btn {
+    @apply inline-flex items-center justify-center gap-2 rounded-xl px-4 py-2 text-sm font-semibold transition;
+  }
+
+  .btn-primary {
+    @apply btn bg-aqua-500 text-ink-900 hover:bg-aqua-400;
+  }
+
+  .btn-secondary {
+    @apply btn bg-white/10 text-white hover:bg-white/20;
+  }
+
+  .btn-outline {
+    @apply btn border border-white/20 text-white hover:bg-white/10;
+  }
+
+  .input-field {
+    @apply w-full rounded-xl border border-white/10 bg-ink-800/80 px-3 py-2 text-sm text-white placeholder:text-slate-400 focus:border-aqua-400 focus:outline-none focus:ring-2 focus:ring-aqua-500/30;
+  }
+
+  .select-field {
+    @apply w-full rounded-xl border border-white/10 bg-ink-800/80 px-3 py-2 text-sm text-white focus:border-aqua-400 focus:outline-none focus:ring-2 focus:ring-aqua-500/30;
+  }
+
+  .tag {
+    @apply inline-flex items-center rounded-full px-3 py-1 text-xs font-semibold tracking-wide;
+  }
+
+  .tag-success {
+    @apply tag bg-emerald-500/20 text-emerald-200;
+  }
+
+  .tag-danger {
+    @apply tag bg-rose-500/20 text-rose-200;
+  }
+
+  .tag-warning {
+    @apply tag bg-amber-500/20 text-amber-200;
+  }
+
+  .tag-neutral {
+    @apply tag bg-white/10 text-slate-200;
+  }
+}
