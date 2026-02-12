@@ -2,7 +2,9 @@ import { createClient } from "@supabase/supabase-js";
 
 export const supabaseUrl = import.meta.env.VITE_SUPABASE_URL?.trim() || "";
 export const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY?.trim() || "";
-export const siteUrl = import.meta.env.VITE_SITE_URL?.trim() || window.location.origin;
+const envSiteUrl = import.meta.env.VITE_SITE_URL?.trim() || "";
+const browserOrigin = typeof window !== "undefined" ? window.location.origin : "";
+export const siteUrl = browserOrigin || envSiteUrl;
 
 const missingConfigMessage =
   "Missing Supabase config. Set VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY in .env.";
