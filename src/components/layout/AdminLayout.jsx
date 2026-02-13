@@ -31,7 +31,7 @@ const AdminLayout = () => {
             Admin Console
           </h1>
         </div>
-        <nav className="flex flex-col gap-2">
+        <nav className="stagger-list flex flex-col gap-2">
           {links.map(({ to, label, icon: Icon }) => (
             <NavLink
               key={to}
@@ -62,7 +62,7 @@ const AdminLayout = () => {
         </div>
       </aside>
 
-      <main className="p-6 lg:p-10">
+      <main className="p-6 lg:p-10 page-enter">
         <div className="lg:hidden mb-6 glass-panel p-4 flex items-center justify-between">
           <div>
             <BrandLogo size="sm" />

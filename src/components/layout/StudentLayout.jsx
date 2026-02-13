@@ -31,7 +31,7 @@ const StudentLayout = () => {
             Welcome, {student?.name || "Student"}
           </h1>
         </div>
-        <nav className="flex flex-wrap gap-2">
+        <nav className="stagger-list flex flex-wrap gap-2">
           {links.map(({ to, label, icon: Icon }) => (
             <NavLink
               key={to}
@@ -54,7 +54,7 @@ const StudentLayout = () => {
           </button>
         </nav>
       </header>
-      <main className="flex-1 p-6 lg:p-10">
+      <main className="flex-1 p-6 lg:p-10 page-enter">
         <Outlet />
       </main>
     </div>

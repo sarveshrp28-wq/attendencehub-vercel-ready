@@ -31,6 +31,37 @@
   }
 }
 
+@keyframes fade-up {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fade-soft {
+  from {
+    opacity: 0;
+    transform: scale(0.985);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes scan-line {
+  0% {
+    background-position: 0% 50%;
+  }
+  100% {
+    background-position: 200% 50%;
+  }
+}
+
 @layer base {
   * {
     @apply antialiased;
@@ -105,6 +136,43 @@
 }
 
 @layer components {
+  .page-enter {
+    animation: fade-soft 420ms ease-out both;
+  }
+
+  .section-animate {
+    animation: fade-up 500ms cubic-bezier(0.22, 1, 0.36, 1) both;
+  }
+
+  .stagger-list > * {
+    opacity: 0;
+    animation: fade-up 460ms cubic-bezier(0.22, 1, 0.36, 1) forwards;
+  }
+
+  .stagger-list > *:nth-child(1) {
+    animation-delay: 40ms;
+  }
+
+  .stagger-list > *:nth-child(2) {
+    animation-delay: 90ms;
+  }
+
+  .stagger-list > *:nth-child(3) {
+    animation-delay: 140ms;
+  }
+
+  .stagger-list > *:nth-child(4) {
+    animation-delay: 190ms;
+  }
+
+  .stagger-list > *:nth-child(5) {
+    animation-delay: 240ms;
+  }
+
+  .stagger-list > *:nth-child(6) {
+    animation-delay: 290ms;
+  }
+
   .glass-panel {
     @apply relative overflow-hidden rounded-2xl border shadow-card;
     border-color: var(--panel-border);
@@ -143,6 +211,8 @@
     right: 0;
     height: 2px;
     background: linear-gradient(90deg, rgba(45, 212, 191, 0.7), rgba(249, 115, 22, 0.7));
+    background-size: 200% 100%;
+    animation: scan-line 6s linear infinite;
   }
 
   .card-surface:hover {
@@ -178,7 +248,7 @@
 
   .btn-secondary:hover:not(:disabled) {
     background: linear-gradient(130deg, rgba(37, 99, 235, 0.45), rgba(34, 211, 238, 0.3));
-    transform: translateY(-1px);
+    transform: translateY(-1px) scale(1.01);
   }
 
   .btn-outline {
@@ -190,7 +260,7 @@
   .btn-outline:hover:not(:disabled) {
     border-color: rgba(45, 212, 191, 0.55);
     background: linear-gradient(140deg, rgba(45, 212, 191, 0.16), rgba(249, 115, 22, 0.14));
-    transform: translateY(-1px);
+    transform: translateY(-1px) scale(1.01);
   }
 
   .input-field {
@@ -273,5 +343,15 @@
   body::after {
     width: 12rem;
     height: 12rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 1ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 1ms !important;
   }
 }

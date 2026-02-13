@@ -144,6 +144,10 @@ alter table public.attendance enable row level security;
 
 drop policy if exists "Admin full access" on public.students;
 drop policy if exists "Student read own profile" on public.students;
+drop policy if exists "Students select access" on public.students;
+drop policy if exists "Admin insert students" on public.students;
+drop policy if exists "Admin update students" on public.students;
+drop policy if exists "Admin delete students" on public.students;
 
 create policy "Students select access"
 on public.students
@@ -175,6 +179,10 @@ using (public.is_admin());
 
 drop policy if exists "Admin manage all attendance" on public.attendance;
 drop policy if exists "Student read own attendance" on public.attendance;
+drop policy if exists "Attendance select access" on public.attendance;
+drop policy if exists "Admin insert attendance" on public.attendance;
+drop policy if exists "Admin update attendance" on public.attendance;
+drop policy if exists "Admin delete attendance" on public.attendance;
 
 create policy "Attendance select access"
 on public.attendance
@@ -208,7 +216,11 @@ for delete
 to authenticated
 using (public.is_admin());
 
+-- Function: get my attendance stats (drop first so view can be recreated safely)
+drop function if exists public.get_my_attendance();
+
 -- Attendance stats view
+drop view if exists public.student_attendance_stats;
 create or replace view public.student_attendance_stats as
 select
   s.id as student_id,
@@ -239,7 +251,6 @@ group by s.id;
 alter view public.student_attendance_stats set (security_invoker = true);
 
 -- Function: get my attendance stats
-drop function if exists public.get_my_attendance();
 create or replace function public.get_my_attendance()
 returns table (
   student_id uuid,
