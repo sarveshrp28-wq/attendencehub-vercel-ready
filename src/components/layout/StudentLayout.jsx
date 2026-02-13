@@ -24,7 +24,7 @@ const StudentLayout = () => {
 
   return (
     <div className="min-h-screen flex flex-col">
-      <header className="glass-panel px-6 py-4 flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
+      <header className="glass-panel px-6 py-4 flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between bg-gradient-to-r from-aqua-500/12 via-ink-800/65 to-sunrise-500/10">
         <div>
           <BrandLogo size="sm" />
           <h1 className="text-2xl font-semibold text-white">
@@ -38,7 +38,9 @@ const StudentLayout = () => {
               to={to}
               className={({ isActive }) =>
                 `flex items-center gap-2 rounded-xl px-3 py-2 text-sm font-semibold transition ${
-                  isActive ? "bg-white/10 text-white" : "text-slate-300 hover:bg-white/5"
+                  isActive
+                    ? "bg-gradient-to-r from-aqua-500/25 to-sunrise-500/20 text-white border border-aqua-500/35"
+                    : "text-slate-300 hover:bg-white/5 border border-transparent"
                 }`
               }
             >

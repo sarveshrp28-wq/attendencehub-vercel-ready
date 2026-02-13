@@ -8,6 +8,13 @@ This folder contains lightweight PHP endpoints used by the React app.
   - Allowed formats: JPG, PNG, WEBP
   - Max size: 5 MB
   - Response includes `url` for storing in `students.student_photo_url`
+- `POST /send-parent-alert.php`
+  - Accepts JSON payload for student + parent + message
+  - Stores alert records in `php-api/data/parent-alerts.json`
+  - Attempts parent email delivery if `parent_email` is provided
+- `GET /get-parent-alerts.php`
+  - Returns recent parent alerts
+  - Supports query params: `student_id`, `parent_email`, `limit`
 
 ## Local Run
 From project root:
@@ -18,6 +25,10 @@ npm run php:serve
 
 Default URL:
 - `http://localhost:8000/upload-student-photo.php`
+- `http://localhost:8000/send-parent-alert.php`
+- `http://localhost:8000/get-parent-alerts.php`
 
 Set this in frontend `.env`:
 - `VITE_PHP_UPLOAD_URL=http://localhost:8000/upload-student-photo.php`
+- `VITE_PHP_PARENT_ALERT_URL=http://localhost:8000/send-parent-alert.php`
+- `VITE_PHP_PARENT_ALERTS_HISTORY_URL=http://localhost:8000/get-parent-alerts.php`

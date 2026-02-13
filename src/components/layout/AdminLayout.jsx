@@ -24,7 +24,7 @@ const AdminLayout = () => {
 
   return (
     <div className="min-h-screen grid lg:grid-cols-[260px_1fr]">
-      <aside className="hidden lg:flex flex-col gap-6 p-6 bg-ink-800/80 border-r border-white/10">
+      <aside className="hidden lg:flex flex-col gap-6 p-6 bg-gradient-to-b from-ink-800/90 via-ink-800/80 to-ink-900/85 border-r border-white/10">
         <div>
           <BrandLogo size="sm" />
           <h1 className="text-2xl font-semibold text-white mt-2">
@@ -38,7 +38,9 @@ const AdminLayout = () => {
               to={to}
               className={({ isActive }) =>
                 `flex items-center gap-3 rounded-xl px-3 py-2 text-sm font-semibold transition ${
-                  isActive ? "bg-white/10 text-white" : "text-slate-300 hover:bg-white/5"
+                  isActive
+                    ? "bg-gradient-to-r from-aqua-500/25 to-sunrise-500/20 text-white border border-aqua-500/35"
+                    : "text-slate-300 hover:bg-white/5 hover:border-white/15 border border-transparent"
                 }`
               }
             >

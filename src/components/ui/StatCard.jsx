@@ -5,13 +5,17 @@ const StatCard = ({ label, value, hint, icon: Icon, accent = "aqua" }) => (
   <div
     className={clsx(
       "glass-panel p-5 flex items-start gap-4",
-      accent === "sunrise" ? "border-sunrise-500/30" : "border-aqua-500/30"
+      accent === "sunrise"
+        ? "border-sunrise-500/40 bg-gradient-to-br from-sunrise-500/15 to-ink-800/70"
+        : "border-aqua-500/40 bg-gradient-to-br from-aqua-500/15 to-ink-800/70"
     )}
   >
     <div
       className={clsx(
-        "h-12 w-12 rounded-2xl flex items-center justify-center",
-        accent === "sunrise" ? "bg-sunrise-500/20" : "bg-aqua-500/20"
+        "h-12 w-12 rounded-2xl flex items-center justify-center shadow-glow",
+        accent === "sunrise"
+          ? "bg-gradient-to-br from-sunrise-500/40 to-sunrise-400/20"
+          : "bg-gradient-to-br from-aqua-500/40 to-cyan-400/20"
       )}
     >
       {Icon ? <Icon className="h-6 w-6 text-white" /> : null}

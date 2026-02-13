@@ -11,6 +11,8 @@ Role-based attendance management built with React, Vite, Tailwind, and Supabase.
    - `VITE_ADMIN_EMAIL`
    - `VITE_SITE_URL`
    - `VITE_PHP_UPLOAD_URL`
+   - `VITE_PHP_PARENT_ALERT_URL`
+   - `VITE_PHP_PARENT_ALERTS_HISTORY_URL`
 3. Configure Supabase Auth provider:
    - Enable **Google** provider in Supabase Auth.
    - Add your app URL (example: `http://localhost:5173`) as site URL / redirect target.
@@ -32,7 +34,10 @@ Role-based attendance management built with React, Vite, Tailwind, and Supabase.
   - Verifies env values, tables/views/RPCs, Google OAuth URL generation, and edge function status.
 - `npm run php:serve`
   - Runs the PHP API at `http://localhost:8000`.
-  - Endpoint used by the React app: `POST /upload-student-photo.php`.
+  - Endpoints used by React app:
+    - `POST /upload-student-photo.php`
+    - `POST /send-parent-alert.php`
+    - `GET /get-parent-alerts.php`
 
 ## Supabase Setup
 - Tables, policies, and functions live in `supabase/schema.sql`.
@@ -61,6 +66,7 @@ Role-based attendance management built with React, Vite, Tailwind, and Supabase.
 - Enter the student Gmail exactly as they will use for Google sign-in.
 - Parent name and parent phone are required.
 - You can upload student photos through the PHP upload API, or paste a photo URL manually.
+- You can send parent attendance alerts from Student Profile using PHP APIs.
 - Mark attendance daily from **Admin > Mark Attendance**.
 
 ## Student Workflows
