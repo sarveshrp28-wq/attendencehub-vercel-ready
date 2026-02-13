@@ -7,6 +7,7 @@
     "dev": "vite",
     "build": "vite build",
     "preview": "vite preview",
+    "php:serve": "php -S localhost:8000 -t php-api",
     "doctor": "node scripts/doctor.mjs",
     "admin:bootstrap": "node scripts/bootstrap-admin.mjs",
     "supabase:deploy:functions": "npx supabase@2.76.7 functions deploy create-student && npx supabase@2.76.7 functions deploy delete-student && npx supabase@2.76.7 functions deploy send-password-reset"

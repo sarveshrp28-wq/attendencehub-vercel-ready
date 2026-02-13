@@ -35,6 +35,8 @@ const AdminStudentView = () => {
     const percentage = totalDays ? (present / totalDays) * 100 : 0;
     return { totalDays, present, percentage };
   }, [attendance]);
+  const studentPhotoUrl = student?.student_photo_url?.trim() || "";
+  const studentInitial = student?.name?.trim()?.charAt(0)?.toUpperCase() || "?";
 
   if (!student) {
     return <LoadingScreen label="Loading student profile..." />;
@@ -50,11 +52,35 @@ const AdminStudentView = () => {
       <div className="grid gap-6 lg:grid-cols-[1fr_1fr]">
         <Card>
           <h3 className="text-lg font-semibold text-white">Profile Details</h3>
+          <div className="mt-4 flex items-center gap-4">
+            {studentPhotoUrl ? (
+              <img
+                src={studentPhotoUrl}
+                alt={`${student.name} profile`}
+                className="h-20 w-20 rounded-xl object-cover border border-white/10"
+              />
+            ) : (
+              <div className="h-20 w-20 rounded-xl border border-white/10 bg-white/5 flex items-center justify-center text-2xl font-semibold text-white">
+                {studentInitial}
+              </div>
+            )}
+            <div>
+              <p className="text-white font-semibold">{student.name}</p>
+              <p className="text-xs text-slate-400">{student.email}</p>
+            </div>
+          </div>
           <div className="mt-4 space-y-2 text-sm text-slate-300">
-            <p>Email: <span className="text-white">{student.email}</span></p>
             <p>Phone: <span className="text-white">{student.phone_number}</span></p>
             <p>Date of Birth: <span className="text-white">{formatDate(student.date_of_birth)}</span></p>
             <p>Gender: <span className="text-white">{student.gender}</span></p>
+            <p>Parent Name: <span className="text-white">{student.parent_name || "-"}</span></p>
+            <p>
+              Parent Phone:{" "}
+              <span className="text-white">{student.parent_phone_number || "-"}</span>
+            </p>
+            <p>
+              Parent Email: <span className="text-white">{student.parent_email || "-"}</span>
+            </p>
           </div>
         </Card>
 

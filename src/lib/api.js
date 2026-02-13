@@ -134,6 +134,10 @@ const getMyStatsFallback = async () => {
         phone_number: student.phone_number,
         date_of_birth: student.date_of_birth,
         gender: student.gender,
+        parent_name: student.parent_name,
+        parent_phone_number: student.parent_phone_number,
+        parent_email: student.parent_email,
+        student_photo_url: student.student_photo_url,
         ...calculateAttendanceStats(attendanceRows || [])
       }
     ],
@@ -273,9 +277,17 @@ const createStudentFallback = async (payload) => {
     phone_number,
     date_of_birth,
     gender,
+    parent_name,
+    parent_phone_number,
+    parent_email,
+    student_photo_url,
     initial_password,
     send_welcome_email = true
   } = payload;
+  const requiredParentName =
+    typeof parent_name === "string" ? parent_name.trim() : "";
+  const requiredParentPhoneNumber =
+    typeof parent_phone_number === "string" ? parent_phone_number.trim() : "";
 
   if (
     !email ||
@@ -283,6 +295,8 @@ const createStudentFallback = async (payload) => {
     !className ||
     !register_number ||
     !phone_number ||
+    !requiredParentName ||
+    !requiredParentPhoneNumber ||
     !date_of_birth ||
     !gender
   ) {
@@ -293,6 +307,16 @@ const createStudentFallback = async (payload) => {
   }
 
   const normalizedEmail = email.toLowerCase().trim();
+  const normalizedParentEmail =
+    typeof parent_email === "string" && parent_email.trim()
+      ? parent_email.toLowerCase().trim()
+      : null;
+  const normalizedParentName = requiredParentName;
+  const normalizedParentPhoneNumber = requiredParentPhoneNumber;
+  const normalizedPhotoUrl =
+    typeof student_photo_url === "string" && student_photo_url.trim()
+      ? student_photo_url.trim()
+      : null;
   const password = initial_password?.trim() || randomPassword();
   const authClient = createEphemeralSupabaseClient();
 
@@ -316,7 +340,11 @@ const createStudentFallback = async (payload) => {
     register_number,
     phone_number,
     date_of_birth,
-    gender
+    gender,
+    parent_name: normalizedParentName,
+    parent_phone_number: normalizedParentPhoneNumber,
+    parent_email: normalizedParentEmail,
+    student_photo_url: normalizedPhotoUrl
   });
 
   if (insertError) {

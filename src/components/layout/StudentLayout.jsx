@@ -9,6 +9,7 @@ import {
   LogOut,
   BarChart3
 } from "lucide-react";
+import BrandLogo from "../BrandLogo";
 
 const links = [
   { to: "/student/dashboard", label: "Dashboard", icon: LayoutDashboard },
@@ -25,9 +26,7 @@ const StudentLayout = () => {
     <div className="min-h-screen flex flex-col">
       <header className="glass-panel px-6 py-4 flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
         <div>
-          <p className="text-xs uppercase tracking-[0.3em] text-slate-400">
-            Attendance Hub
-          </p>
+          <BrandLogo size="sm" />
           <h1 className="text-2xl font-semibold text-white">
             Welcome, {student?.name || "Student"}
           </h1>

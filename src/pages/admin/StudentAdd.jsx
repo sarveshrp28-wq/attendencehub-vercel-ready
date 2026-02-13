@@ -4,6 +4,7 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
 import { useNavigate } from "react-router-dom";
 import { createStudent } from "../../lib/api";
+import { uploadStudentPhoto } from "../../lib/phpApi";
 import { GENDERS } from "../../lib/constants";
 import SectionHeader from "../../components/ui/SectionHeader";
 import Card from "../../components/ui/Card";
@@ -15,6 +16,26 @@ const schema = yup.object({
   class: yup.string().required("Class is required"),
   register_number: yup.string().required("Register number is required"),
   phone_number: yup.string().required("Phone number is required"),
+  parent_name: yup.string().trim().required("Parent name is required"),
+  parent_phone_number: yup.string().trim().required("Parent phone number is required"),
+  parent_email: yup
+    .string()
+    .trim()
+    .transform((value) => value || "")
+    .test(
+      "parent-email",
+      "Valid parent email required",
+      (value) => !value || yup.string().email().isValidSync(value)
+    ),
+  student_photo_url: yup
+    .string()
+    .trim()
+    .transform((value) => value || "")
+    .test(
+      "student-photo-url",
+      "Valid photo URL required",
+      (value) => !value || yup.string().url().isValidSync(value)
+    ),
   date_of_birth: yup.string().required("Date of birth is required"),
   gender: yup.string().required("Gender is required"),
   initial_password: yup
@@ -27,12 +48,19 @@ const schema = yup.object({
     )
 });
 
+const emptyToNull = (value) => {
+  const trimmed = typeof value === "string" ? value.trim() : "";
+  return trimmed || null;
+};
+
 const AdminStudentAdd = () => {
   const navigate = useNavigate();
   const [status, setStatus] = useState("");
   const [generatedPassword, setGeneratedPassword] = useState("");
   const [autoGeneratePassword, setAutoGeneratePassword] = useState(true);
   const [sendWelcomeEmail, setSendWelcomeEmail] = useState(true);
+  const [photoUploadStatus, setPhotoUploadStatus] = useState("");
+  const [uploadingPhoto, setUploadingPhoto] = useState(false);
 
   const {
     register,
@@ -43,6 +71,29 @@ const AdminStudentAdd = () => {
   } = useForm({ resolver: yupResolver(schema) });
 
   const initialPassword = watch("initial_password");
+  const studentPhotoUrl = watch("student_photo_url");
+
+  const handlePhotoUpload = async (event) => {
+    const file = event.target.files?.[0];
+    event.target.value = "";
+    if (!file) return;
+
+    setPhotoUploadStatus("");
+    setUploadingPhoto(true);
+    const { data, error } = await uploadStudentPhoto(file);
+    setUploadingPhoto(false);
+
+    if (error) {
+      setPhotoUploadStatus(error.message);
+      return;
+    }
+
+    setValue("student_photo_url", data.url, {
+      shouldDirty: true,
+      shouldValidate: true
+    });
+    setPhotoUploadStatus("Student photo uploaded.");
+  };
 
   const onSubmit = async (values) => {
     setStatus("");
@@ -50,6 +101,10 @@ const AdminStudentAdd = () => {
 
     const payload = {
       ...values,
+      parent_name: emptyToNull(values.parent_name),
+      parent_phone_number: emptyToNull(values.parent_phone_number),
+      parent_email: emptyToNull(values.parent_email)?.toLowerCase() || null,
+      student_photo_url: emptyToNull(values.student_photo_url),
       initial_password: autoGeneratePassword ? "" : values.initial_password?.trim(),
       send_welcome_email: sendWelcomeEmail
     };
@@ -143,6 +198,36 @@ const AdminStudentAdd = () => {
           </div>
 
           <div>
+            <label className="text-sm text-slate-300">Parent name</label>
+            <input className="input-field mt-2" {...register("parent_name")} />
+            {errors.parent_name ? (
+              <p className="text-xs text-rose-300 mt-1">{errors.parent_name.message}</p>
+            ) : null}
+          </div>
+
+          <div>
+            <label className="text-sm text-slate-300">Parent phone number</label>
+            <input
+              className="input-field mt-2"
+              placeholder="+91..."
+              {...register("parent_phone_number")}
+            />
+            {errors.parent_phone_number ? (
+              <p className="text-xs text-rose-300 mt-1">
+                {errors.parent_phone_number.message}
+              </p>
+            ) : null}
+          </div>
+
+          <div>
+            <label className="text-sm text-slate-300">Parent email</label>
+            <input className="input-field mt-2" type="email" {...register("parent_email")} />
+            {errors.parent_email ? (
+              <p className="text-xs text-rose-300 mt-1">{errors.parent_email.message}</p>
+            ) : null}
+          </div>
+
+          <div>
             <label className="text-sm text-slate-300">Date of birth</label>
             <input
               className="input-field mt-2"
@@ -170,6 +255,52 @@ const AdminStudentAdd = () => {
               <p className="text-xs text-rose-300 mt-1">{errors.gender.message}</p>
             ) : null}
           </div>
+
+          <div className="lg:col-span-2">
+            <label className="text-sm text-slate-300">Upload student photo (PHP)</label>
+            <input
+              className="input-field mt-2"
+              type="file"
+              accept="image/png,image/jpeg,image/webp"
+              onChange={handlePhotoUpload}
+            />
+            <p className="mt-1 text-xs text-slate-400">
+              JPG, PNG, WEBP up to 5MB.
+            </p>
+            {uploadingPhoto ? (
+              <p className="text-xs text-sky-300 mt-1">Uploading photo...</p>
+            ) : null}
+            {photoUploadStatus ? (
+              <p className="text-xs text-slate-200 mt-1">{photoUploadStatus}</p>
+            ) : null}
+          </div>
+
+          <div className="lg:col-span-2">
+            <label className="text-sm text-slate-300">Student photo URL</label>
+            <input
+              className="input-field mt-2"
+              placeholder="https://..."
+              {...register("student_photo_url")}
+            />
+            {errors.student_photo_url ? (
+              <p className="text-xs text-rose-300 mt-1">
+                {errors.student_photo_url.message}
+              </p>
+            ) : null}
+          </div>
+
+          {studentPhotoUrl ? (
+            <div className="lg:col-span-2 rounded-xl border border-white/10 bg-white/5 p-3">
+              <p className="text-xs uppercase tracking-widest text-slate-400">
+                Photo Preview
+              </p>
+              <img
+                src={studentPhotoUrl}
+                alt="Student preview"
+                className="mt-2 h-24 w-24 rounded-lg object-cover border border-white/10"
+              />
+            </div>
+          ) : null}
 
           <div className="lg:col-span-2 grid gap-3 md:grid-cols-2">
             <label className="flex items-center gap-3 text-sm text-slate-300">
@@ -217,8 +348,8 @@ const AdminStudentAdd = () => {
           </div>
 
           <div className="lg:col-span-2 flex flex-wrap gap-3 items-center">
-            <Button type="submit" disabled={isSubmitting}>
-              {isSubmitting ? "Creating..." : "Create student"}
+            <Button type="submit" disabled={isSubmitting || uploadingPhoto}>
+              {isSubmitting ? "Creating..." : uploadingPhoto ? "Uploading..." : "Create student"}
             </Button>
             {status ? <p className="text-sm text-slate-200">{status}</p> : null}
           </div>

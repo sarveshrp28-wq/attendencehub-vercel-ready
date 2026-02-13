@@ -27,7 +27,15 @@ const AdminStudents = () => {
   const filtered = useMemo(() => {
     const term = search.toLowerCase();
     return students.filter((student) =>
-      [student.name, student.email, student.class, student.register_number]
+      [
+        student.name,
+        student.email,
+        student.class,
+        student.register_number,
+        student.parent_name,
+        student.parent_phone_number,
+        student.parent_email
+      ]
         .join(" ")
         .toLowerCase()
         .includes(term)
@@ -82,7 +90,7 @@ const AdminStudents = () => {
         <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
           <input
             className="input-field max-w-sm"
-            placeholder="Search by name, email, class..."
+            placeholder="Search by student or parent..."
             value={search}
             onChange={(event) => setSearch(event.target.value)}
           />
@@ -99,6 +107,7 @@ const AdminStudents = () => {
               <thead>
                 <tr className="text-left text-xs uppercase tracking-widest text-slate-400">
                   <th className="pb-3">Student</th>
+                  <th className="pb-3">Parent Contact</th>
                   <th className="pb-3">Class</th>
                   <th className="pb-3">Registered</th>
                   <th className="pb-3">Actions</th>
@@ -108,8 +117,29 @@ const AdminStudents = () => {
                 {filtered.map((student) => (
                   <tr key={student.id} className="border-t border-white/5">
                     <td className="py-4">
-                      <p className="font-semibold text-white">{student.name}</p>
-                      <p className="text-xs text-slate-400">{student.email}</p>
+                      <div className="flex items-center gap-3">
+                        {student.student_photo_url ? (
+                          <img
+                            src={student.student_photo_url}
+                            alt={`${student.name} profile`}
+                            className="h-10 w-10 rounded-lg object-cover border border-white/10"
+                          />
+                        ) : (
+                          <div className="h-10 w-10 rounded-lg border border-white/10 bg-white/5 flex items-center justify-center text-sm font-semibold text-white">
+                            {student.name?.trim()?.charAt(0)?.toUpperCase() || "?"}
+                          </div>
+                        )}
+                        <div>
+                          <p className="font-semibold text-white">{student.name}</p>
+                          <p className="text-xs text-slate-400">{student.email}</p>
+                        </div>
+                      </div>
+                    </td>
+                    <td className="py-4">
+                      <p className="text-white">{student.parent_name || "-"}</p>
+                      <p className="text-xs text-slate-400">
+                        {student.parent_phone_number || "-"}
+                      </p>
                     </td>
                     <td className="py-4">{student.class}</td>
                     <td className="py-4">{formatDate(student.created_at)}</td>

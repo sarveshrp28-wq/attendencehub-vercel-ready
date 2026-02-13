@@ -12,6 +12,10 @@ create table if not exists public.students (
   phone_number text not null,
   date_of_birth date not null,
   gender text not null check (gender in ('Male', 'Female', 'Other')),
+  parent_name text,
+  parent_phone_number text,
+  parent_email text,
+  student_photo_url text,
   created_at timestamptz default now(),
   updated_at timestamptz default now()
 );
@@ -26,6 +30,18 @@ alter table public.students
 alter table public.students
   add constraint students_user_id_fkey
   foreign key (user_id) references auth.users(id) on delete set null;
+
+alter table public.students
+  add column if not exists parent_name text;
+
+alter table public.students
+  add column if not exists parent_phone_number text;
+
+alter table public.students
+  add column if not exists parent_email text;
+
+alter table public.students
+  add column if not exists student_photo_url text;
 
 create index if not exists students_user_id_idx on public.students(user_id);
 create index if not exists students_email_idx on public.students(email);
@@ -204,6 +220,10 @@ select
   s.phone_number,
   s.date_of_birth,
   s.gender,
+  s.parent_name,
+  s.parent_phone_number,
+  s.parent_email,
+  s.student_photo_url,
   count(a.id) as total_days,
   count(*) filter (where a.status = 'Present') as present_days,
   count(*) filter (where a.status = 'Absent') as absent_days,
@@ -219,6 +239,7 @@ group by s.id;
 alter view public.student_attendance_stats set (security_invoker = true);
 
 -- Function: get my attendance stats
+drop function if exists public.get_my_attendance();
 create or replace function public.get_my_attendance()
 returns table (
   student_id uuid,
@@ -230,6 +251,10 @@ returns table (
   phone_number text,
   date_of_birth date,
   gender text,
+  parent_name text,
+  parent_phone_number text,
+  parent_email text,
+  student_photo_url text,
   total_days bigint,
   present_days bigint,
   absent_days bigint,

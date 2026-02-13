@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import { siteUrl, supabase } from "../lib/supabaseClient";
+import BrandLogo from "../components/BrandLogo";
 
 const ForgotPassword = () => {
   const [email, setEmail] = useState("");
@@ -33,9 +34,7 @@ const ForgotPassword = () => {
   return (
     <div className="min-h-screen flex items-center justify-center px-6">
       <div className="glass-panel max-w-md w-full p-8">
-        <p className="text-xs uppercase tracking-[0.3em] text-slate-400">
-          Attendance Hub
-        </p>
+        <BrandLogo size="lg" className="justify-center" showText={false} />
         <h1 className="text-3xl font-semibold text-white mt-3">Forgot password</h1>
         <p className="text-sm text-slate-300 mt-2">
           Enter your account email to receive a secure password reset link.

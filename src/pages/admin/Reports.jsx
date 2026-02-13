@@ -35,6 +35,9 @@ const AdminReports = () => {
         email: item.email,
         class: item.class,
         register_number: item.register_number,
+        parent_name: item.parent_name || "",
+        parent_phone_number: item.parent_phone_number || "",
+        parent_email: item.parent_email || "",
         total_days: item.total_days,
         present_days: item.present_days,
         absent_days: item.absent_days,
@@ -82,6 +85,7 @@ const AdminReports = () => {
               <thead>
                 <tr className="text-left text-xs uppercase tracking-widest text-slate-400">
                   <th className="pb-3">Student</th>
+                  <th className="pb-3">Parent Contact</th>
                   <th className="pb-3">Class</th>
                   <th className="pb-3">Present</th>
                   <th className="pb-3">Absent</th>
@@ -92,8 +96,29 @@ const AdminReports = () => {
                 {stats.map((item) => (
                   <tr key={item.student_id} className="border-t border-white/5">
                     <td className="py-4">
-                      <p className="text-white font-semibold">{item.name}</p>
-                      <p className="text-xs text-slate-400">{item.email}</p>
+                      <div className="flex items-center gap-3">
+                        {item.student_photo_url ? (
+                          <img
+                            src={item.student_photo_url}
+                            alt={`${item.name} profile`}
+                            className="h-10 w-10 rounded-lg object-cover border border-white/10"
+                          />
+                        ) : (
+                          <div className="h-10 w-10 rounded-lg border border-white/10 bg-white/5 flex items-center justify-center text-sm font-semibold text-white">
+                            {item.name?.trim()?.charAt(0)?.toUpperCase() || "?"}
+                          </div>
+                        )}
+                        <div>
+                          <p className="text-white font-semibold">{item.name}</p>
+                          <p className="text-xs text-slate-400">{item.email}</p>
+                        </div>
+                      </div>
+                    </td>
+                    <td className="py-4">
+                      <p className="text-white">{item.parent_name || "-"}</p>
+                      <p className="text-xs text-slate-400">
+                        {item.parent_phone_number || "-"}
+                      </p>
                     </td>
                     <td className="py-4">{item.class}</td>
                     <td className="py-4">{item.present_days}</td>
@@ -103,7 +128,7 @@ const AdminReports = () => {
                 ))}
                 {!stats.length ? (
                   <tr>
-                    <td colSpan="5" className="py-6 text-center text-slate-400">
+                    <td colSpan="6" className="py-6 text-center text-slate-400">
                       No report data yet.
                     </td>
                   </tr>

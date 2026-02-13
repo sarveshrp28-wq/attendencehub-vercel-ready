@@ -98,6 +98,7 @@ const AdminAttendance = () => {
               <tr className="text-left text-xs uppercase tracking-widest text-slate-400">
                 <th className="pb-3">Student</th>
                 <th className="pb-3">Class</th>
+                <th className="pb-3">Parent Phone</th>
                 <th className="pb-3">Status</th>
               </tr>
             </thead>
@@ -105,10 +106,26 @@ const AdminAttendance = () => {
               {students.map((student) => (
                 <tr key={student.id} className="border-t border-white/5">
                   <td className="py-4">
-                    <p className="font-semibold text-white">{student.name}</p>
-                    <p className="text-xs text-slate-400">{student.email}</p>
+                    <div className="flex items-center gap-3">
+                      {student.student_photo_url ? (
+                        <img
+                          src={student.student_photo_url}
+                          alt={`${student.name} profile`}
+                          className="h-10 w-10 rounded-lg object-cover border border-white/10"
+                        />
+                      ) : (
+                        <div className="h-10 w-10 rounded-lg border border-white/10 bg-white/5 flex items-center justify-center text-sm font-semibold text-white">
+                          {student.name?.trim()?.charAt(0)?.toUpperCase() || "?"}
+                        </div>
+                      )}
+                      <div>
+                        <p className="font-semibold text-white">{student.name}</p>
+                        <p className="text-xs text-slate-400">{student.email}</p>
+                      </div>
+                    </div>
                   </td>
                   <td className="py-4">{student.class}</td>
+                  <td className="py-4">{student.parent_phone_number || "-"}</td>
                   <td className="py-4">
                     <select
                       className="select-field max-w-[160px]"
@@ -129,7 +146,7 @@ const AdminAttendance = () => {
               ))}
               {!students.length ? (
                 <tr>
-                  <td colSpan="3" className="py-6 text-center text-slate-400">
+                  <td colSpan="4" className="py-6 text-center text-slate-400">
                     No students found.
                   </td>
                 </tr>

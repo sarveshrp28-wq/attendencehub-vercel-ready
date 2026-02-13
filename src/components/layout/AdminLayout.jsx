@@ -9,6 +9,7 @@ import {
   LogOut
 } from "lucide-react";
 import { useAuth } from "../../context/AuthContext";
+import BrandLogo from "../BrandLogo";
 
 const links = [
   { to: "/admin/dashboard", label: "Dashboard", icon: LayoutDashboard },
@@ -25,9 +26,7 @@ const AdminLayout = () => {
     <div className="min-h-screen grid lg:grid-cols-[260px_1fr]">
       <aside className="hidden lg:flex flex-col gap-6 p-6 bg-ink-800/80 border-r border-white/10">
         <div>
-          <p className="text-xs uppercase tracking-[0.3em] text-slate-400">
-            Attendance Hub
-          </p>
+          <BrandLogo size="sm" />
           <h1 className="text-2xl font-semibold text-white mt-2">
             Admin Console
           </h1>
@@ -64,9 +63,7 @@ const AdminLayout = () => {
       <main className="p-6 lg:p-10">
         <div className="lg:hidden mb-6 glass-panel p-4 flex items-center justify-between">
           <div>
-            <p className="text-xs uppercase tracking-[0.3em] text-slate-400">
-              Attendance Hub
-            </p>
+            <BrandLogo size="sm" />
             <p className="text-lg font-semibold text-white">Admin Console</p>
           </div>
           <button className="btn-outline" onClick={() => signOut()}>
