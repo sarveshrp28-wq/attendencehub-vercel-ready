@@ -6,6 +6,7 @@ import SectionHeader from "../../components/ui/SectionHeader";
 import Card from "../../components/ui/Card";
 import Button from "../../components/ui/Button";
 import EmptyState from "../../components/ui/EmptyState";
+import StudentAvatar from "../../components/ui/StudentAvatar";
 
 const AdminStudents = () => {
   const [students, setStudents] = useState([]);
@@ -118,17 +119,11 @@ const AdminStudents = () => {
                   <tr key={student.id} className="border-t border-white/5">
                     <td className="py-4">
                       <div className="flex items-center gap-3">
-                        {student.student_photo_url ? (
-                          <img
-                            src={student.student_photo_url}
-                            alt={`${student.name} profile`}
-                            className="h-10 w-10 rounded-lg object-cover border border-white/10"
-                          />
-                        ) : (
-                          <div className="h-10 w-10 rounded-lg border border-white/10 bg-white/5 flex items-center justify-center text-sm font-semibold text-white">
-                            {student.name?.trim()?.charAt(0)?.toUpperCase() || "?"}
-                          </div>
-                        )}
+                        <StudentAvatar
+                          name={student.name}
+                          photoUrl={student.student_photo_url}
+                          size="sm"
+                        />
                         <div>
                           <p className="font-semibold text-white">{student.name}</p>
                           <p className="text-xs text-slate-400">{student.email}</p>

@@ -122,7 +122,7 @@ serve(async (req) => {
       : null;
   const normalizedParentName = requiredParentName;
   const normalizedParentPhoneNumber = requiredParentPhoneNumber;
-  const normalizedPhotoUrl =
+  const normalizedStudentPhotoUrl =
     typeof student_photo_url === "string" && student_photo_url.trim()
       ? student_photo_url.trim()
       : null;
@@ -167,7 +167,7 @@ serve(async (req) => {
       parent_name: normalizedParentName,
       parent_phone_number: normalizedParentPhoneNumber,
       parent_email: normalizedParentEmail,
-      student_photo_url: normalizedPhotoUrl
+      student_photo_url: normalizedStudentPhotoUrl
     })
     .select("id")
     .single();

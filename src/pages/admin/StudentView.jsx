@@ -9,6 +9,7 @@ import Card from "../../components/ui/Card";
 import Button from "../../components/ui/Button";
 import StatusPill from "../../components/ui/StatusPill";
 import LoadingScreen from "../../components/LoadingScreen";
+import StudentAvatar from "../../components/ui/StudentAvatar";
 
 const buildDefaultAlertMessage = ({ studentName, parentName, attendancePercentage }) => {
   const name = parentName || "Parent";
@@ -98,9 +99,6 @@ const AdminStudentView = () => {
     [overallStats, recentStats]
   );
 
-  const studentPhotoUrl = student?.student_photo_url?.trim() || "";
-  const studentInitial = student?.name?.trim()?.charAt(0)?.toUpperCase() || "?";
-
   const loadHistory = async () => {
     if (!student) return;
     setLoadingHistory(true);
@@ -169,17 +167,11 @@ const AdminStudentView = () => {
         <Card>
           <h3 className="text-lg font-semibold text-white">Profile Details</h3>
           <div className="mt-4 flex items-center gap-4">
-            {studentPhotoUrl ? (
-              <img
-                src={studentPhotoUrl}
-                alt={`${student.name} profile`}
-                className="h-20 w-20 rounded-xl object-cover border border-white/10"
-              />
-            ) : (
-              <div className="h-20 w-20 rounded-xl border border-white/10 bg-white/5 flex items-center justify-center text-2xl font-semibold text-white">
-                {studentInitial}
-              </div>
-            )}
+            <StudentAvatar
+              name={student.name}
+              photoUrl={student.student_photo_url}
+              size="lg"
+            />
             <div>
               <p className="text-white font-semibold">{student.name}</p>
               <p className="text-xs text-slate-400">{student.email}</p>

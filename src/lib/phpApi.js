@@ -1,64 +1,32 @@
-const phpUploadUrl = import.meta.env.VITE_PHP_UPLOAD_URL?.trim() || "";
+import { uploadStudentPhoto as uploadViaStorage } from "./studentPhoto";
 
-const parseJsonSafely = async (response) => {
-  try {
-    return await response.json();
-  } catch (_error) {
-    return null;
+const fallbackStudentId = () => {
+  if (typeof crypto !== "undefined" && typeof crypto.randomUUID === "function") {
+    return crypto.randomUUID();
   }
+  return `temp-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
 };
 
-export const uploadStudentPhoto = async (file) => {
-  if (!file) {
-    return { data: null, error: { message: "Please choose an image file." } };
+// Backward-compatible bridge for old code paths that still import phpApi.js.
+// It now uploads via Supabase Storage instead of requiring VITE_PHP_UPLOAD_URL.
+export const uploadStudentPhoto = async (fileOrPayload) => {
+  const file =
+    fileOrPayload instanceof File ? fileOrPayload : fileOrPayload?.file || null;
+  const studentId =
+    typeof fileOrPayload?.studentId === "string" && fileOrPayload.studentId.trim()
+      ? fileOrPayload.studentId.trim()
+      : fallbackStudentId();
+
+  const { data, error } = await uploadViaStorage({ file, studentId });
+  if (error) {
+    return { data: null, error };
   }
 
-  if (!phpUploadUrl) {
-    return {
-      data: null,
-      error: {
-        message:
-          "Photo upload is not configured. Set VITE_PHP_UPLOAD_URL in your .env file."
-      }
-    };
-  }
-
-  const formData = new FormData();
-  formData.append("photo", file);
-
-  try {
-    const response = await fetch(phpUploadUrl, {
-      method: "POST",
-      body: formData
-    });
-    const payload = await parseJsonSafely(response);
-
-    if (!response.ok) {
-      return {
-        data: null,
-        error: {
-          message:
-            payload?.message ||
-            `Photo upload failed with status ${response.status}.`
-        }
-      };
-    }
-
-    if (!payload?.url) {
-      return {
-        data: null,
-        error: { message: "Upload succeeded but did not return a photo URL." }
-      };
-    }
-
-    return { data: payload, error: null };
-  } catch (_error) {
-    return {
-      data: null,
-      error: {
-        message:
-          "Could not reach PHP upload API. Start PHP server and verify VITE_PHP_UPLOAD_URL."
-      }
-    };
-  }
+  return {
+    data: {
+      url: data?.publicUrl || "",
+      objectPath: data?.objectPath || ""
+    },
+    error: null
+  };
 };

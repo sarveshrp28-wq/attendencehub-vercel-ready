@@ -4,12 +4,17 @@ import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
 import { getStudentById, updateStudent } from "../../lib/api";
-import { uploadStudentPhoto } from "../../lib/phpApi";
+import {
+  deleteStudentPhotoByUrl,
+  uploadStudentPhoto,
+  validateStudentPhotoFile
+} from "../../lib/studentPhoto";
 import { GENDERS } from "../../lib/constants";
 import SectionHeader from "../../components/ui/SectionHeader";
 import Card from "../../components/ui/Card";
 import Button from "../../components/ui/Button";
 import LoadingScreen from "../../components/LoadingScreen";
+import StudentPhotoDropzone from "../../components/ui/StudentPhotoDropzone";
 
 const schema = yup.object({
   name: yup.string().required("Name is required"),
@@ -27,15 +32,6 @@ const schema = yup.object({
       "Valid parent email required",
       (value) => !value || yup.string().email().isValidSync(value)
     ),
-  student_photo_url: yup
-    .string()
-    .trim()
-    .transform((value) => value || "")
-    .test(
-      "student-photo-url",
-      "Valid photo URL required",
-      (value) => !value || yup.string().url().isValidSync(value)
-    ),
   date_of_birth: yup.string().required("Date of birth is required"),
   gender: yup.string().required("Gender is required")
 });
@@ -50,39 +46,15 @@ const AdminStudentEdit = () => {
   const navigate = useNavigate();
   const [student, setStudent] = useState(null);
   const [status, setStatus] = useState("");
-  const [photoUploadStatus, setPhotoUploadStatus] = useState("");
-  const [uploadingPhoto, setUploadingPhoto] = useState(false);
+  const [photoFile, setPhotoFile] = useState(null);
+  const [removePhoto, setRemovePhoto] = useState(false);
+  const [photoError, setPhotoError] = useState("");
   const {
     register,
     handleSubmit,
     reset,
-    setValue,
-    watch,
     formState: { errors, isSubmitting }
   } = useForm({ resolver: yupResolver(schema) });
-  const studentPhotoUrl = watch("student_photo_url");
-
-  const handlePhotoUpload = async (event) => {
-    const file = event.target.files?.[0];
-    event.target.value = "";
-    if (!file) return;
-
-    setPhotoUploadStatus("");
-    setUploadingPhoto(true);
-    const { data, error } = await uploadStudentPhoto(file);
-    setUploadingPhoto(false);
-
-    if (error) {
-      setPhotoUploadStatus(error.message);
-      return;
-    }
-
-    setValue("student_photo_url", data.url, {
-      shouldDirty: true,
-      shouldValidate: true
-    });
-    setPhotoUploadStatus("Student photo uploaded.");
-  };
 
   useEffect(() => {
     const fetchStudent = async () => {
@@ -92,28 +64,74 @@ const AdminStudentEdit = () => {
         ...(data || {}),
         parent_name: data?.parent_name || "",
         parent_phone_number: data?.parent_phone_number || "",
-        parent_email: data?.parent_email || "",
-        student_photo_url: data?.student_photo_url || ""
+        parent_email: data?.parent_email || ""
       });
+      setPhotoFile(null);
+      setPhotoError("");
+      setRemovePhoto(false);
     };
     fetchStudent();
   }, [id, reset]);
 
   const onSubmit = async (values) => {
     setStatus("");
+    setPhotoError("");
+
+    const previousPhotoUrl = student?.student_photo_url || "";
     const payload = {
       ...values,
       parent_name: emptyToNull(values.parent_name),
       parent_phone_number: emptyToNull(values.parent_phone_number),
-      parent_email: emptyToNull(values.parent_email)?.toLowerCase() || null,
-      student_photo_url: emptyToNull(values.student_photo_url)
+      parent_email: emptyToNull(values.parent_email)?.toLowerCase() || null
     };
+
+    if (photoFile) {
+      const { data: photoData, error: photoUploadError } = await uploadStudentPhoto({
+        file: photoFile,
+        studentId: id
+      });
+      if (photoUploadError) {
+        setStatus(`Photo upload failed: ${photoUploadError.message}`);
+        return;
+      }
+      payload.student_photo_url = photoData?.publicUrl || null;
+    } else if (removePhoto) {
+      payload.student_photo_url = null;
+    }
+
     const { error } = await updateStudent(id, payload);
     if (error) {
       setStatus(error.message);
       return;
     }
+
+    const photoWasChanged = Boolean(
+      previousPhotoUrl && (removePhoto || (photoFile && payload.student_photo_url !== previousPhotoUrl))
+    );
+
+    if (photoWasChanged) {
+      await deleteStudentPhotoByUrl(previousPhotoUrl);
+    }
+
     navigate(`/admin/students/${id}`);
+  };
+
+  const handleSelectPhoto = (file) => {
+    const validationMessage = validateStudentPhotoFile(file);
+    if (validationMessage) {
+      setPhotoError(validationMessage);
+      setPhotoFile(null);
+      return;
+    }
+    setPhotoError("");
+    setPhotoFile(file);
+    setRemovePhoto(false);
+  };
+
+  const handleClearPhoto = () => {
+    setPhotoError("");
+    setPhotoFile(null);
+    setRemovePhoto(true);
   };
 
   if (!student) {
@@ -230,54 +248,19 @@ const AdminStudentEdit = () => {
           </div>
 
           <div className="lg:col-span-2">
-            <label className="text-sm text-slate-300">Upload student photo (PHP)</label>
-            <input
-              className="input-field mt-2"
-              type="file"
-              accept="image/png,image/jpeg,image/webp"
-              onChange={handlePhotoUpload}
+            <StudentPhotoDropzone
+              currentPhotoUrl={removePhoto ? "" : student?.student_photo_url || ""}
+              selectedFile={photoFile}
+              error={photoError}
+              disabled={isSubmitting}
+              onSelectFile={handleSelectPhoto}
+              onClear={handleClearPhoto}
             />
-            <p className="mt-1 text-xs text-slate-400">
-              JPG, PNG, WEBP up to 5MB.
-            </p>
-            {uploadingPhoto ? (
-              <p className="text-xs text-sky-300 mt-1">Uploading photo...</p>
-            ) : null}
-            {photoUploadStatus ? (
-              <p className="text-xs text-slate-200 mt-1">{photoUploadStatus}</p>
-            ) : null}
           </div>
-
-          <div className="lg:col-span-2">
-            <label className="text-sm text-slate-300">Student photo URL</label>
-            <input
-              className="input-field mt-2"
-              placeholder="https://..."
-              {...register("student_photo_url")}
-            />
-            {errors.student_photo_url ? (
-              <p className="text-xs text-rose-300 mt-1">
-                {errors.student_photo_url.message}
-              </p>
-            ) : null}
-          </div>
-
-          {studentPhotoUrl ? (
-            <div className="lg:col-span-2 rounded-xl border border-white/10 bg-white/5 p-3">
-              <p className="text-xs uppercase tracking-widest text-slate-400">
-                Photo Preview
-              </p>
-              <img
-                src={studentPhotoUrl}
-                alt="Student preview"
-                className="mt-2 h-24 w-24 rounded-lg object-cover border border-white/10"
-              />
-            </div>
-          ) : null}
 
           <div className="lg:col-span-2 flex flex-wrap gap-3 items-center">
-            <Button type="submit" disabled={isSubmitting || uploadingPhoto}>
-              {isSubmitting ? "Saving..." : uploadingPhoto ? "Uploading..." : "Save changes"}
+            <Button type="submit" disabled={isSubmitting}>
+              {isSubmitting ? "Saving..." : "Save changes"}
             </Button>
             {status ? <p className="text-sm text-rose-200">{status}</p> : null}
           </div>

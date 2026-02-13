@@ -4,6 +4,4 @@ dist
 .env.local
 .env.*.local
 .DS_Store
-php-api/uploads/students/*
-!php-api/uploads/students/.gitkeep
 php-api/data/parent-alerts.json

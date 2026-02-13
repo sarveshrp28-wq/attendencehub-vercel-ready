@@ -5,6 +5,7 @@ import SectionHeader from "../../components/ui/SectionHeader";
 import Card from "../../components/ui/Card";
 import Button from "../../components/ui/Button";
 import { downloadCSV } from "../../utils/csv";
+import StudentAvatar from "../../components/ui/StudentAvatar";
 
 const AdminReports = () => {
   const [stats, setStats] = useState([]);
@@ -38,6 +39,7 @@ const AdminReports = () => {
         parent_name: item.parent_name || "",
         parent_phone_number: item.parent_phone_number || "",
         parent_email: item.parent_email || "",
+        student_photo_url: item.student_photo_url || "",
         total_days: item.total_days,
         present_days: item.present_days,
         absent_days: item.absent_days,
@@ -97,17 +99,11 @@ const AdminReports = () => {
                   <tr key={item.student_id} className="border-t border-white/5">
                     <td className="py-4">
                       <div className="flex items-center gap-3">
-                        {item.student_photo_url ? (
-                          <img
-                            src={item.student_photo_url}
-                            alt={`${item.name} profile`}
-                            className="h-10 w-10 rounded-lg object-cover border border-white/10"
-                          />
-                        ) : (
-                          <div className="h-10 w-10 rounded-lg border border-white/10 bg-white/5 flex items-center justify-center text-sm font-semibold text-white">
-                            {item.name?.trim()?.charAt(0)?.toUpperCase() || "?"}
-                          </div>
-                        )}
+                        <StudentAvatar
+                          name={item.name}
+                          photoUrl={item.student_photo_url}
+                          size="sm"
+                        />
                         <div>
                           <p className="text-white font-semibold">{item.name}</p>
                           <p className="text-xs text-slate-400">{item.email}</p>

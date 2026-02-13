@@ -3,13 +3,12 @@ import { useAuth } from "../../context/AuthContext";
 import { formatDate } from "../../lib/formatters";
 import Card from "../../components/ui/Card";
 import SectionHeader from "../../components/ui/SectionHeader";
+import StudentAvatar from "../../components/ui/StudentAvatar";
 
 const StudentProfile = () => {
   const { student } = useAuth();
 
   if (!student) return null;
-  const studentPhotoUrl = student.student_photo_url?.trim() || "";
-  const studentInitial = student.name?.trim()?.charAt(0)?.toUpperCase() || "?";
 
   return (
     <div className="space-y-8">
@@ -19,17 +18,11 @@ const StudentProfile = () => {
       />
       <Card>
         <div className="flex items-center gap-4 mb-6">
-          {studentPhotoUrl ? (
-            <img
-              src={studentPhotoUrl}
-              alt={`${student.name} profile`}
-              className="h-20 w-20 rounded-xl object-cover border border-white/10"
-            />
-          ) : (
-            <div className="h-20 w-20 rounded-xl border border-white/10 bg-white/5 flex items-center justify-center text-2xl font-semibold text-white">
-              {studentInitial}
-            </div>
-          )}
+          <StudentAvatar
+            name={student.name}
+            photoUrl={student.student_photo_url}
+            size="lg"
+          />
           <div>
             <p className="text-white font-semibold text-lg">{student.name}</p>
             <p className="text-slate-400 text-sm">{student.email}</p>

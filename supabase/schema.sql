@@ -177,6 +177,64 @@ for delete
 to authenticated
 using (public.is_admin());
 
+-- Student photo storage (Supabase Storage)
+insert into storage.buckets (id, name, public, file_size_limit, allowed_mime_types)
+values (
+  'student-photos',
+  'student-photos',
+  true,
+  5242880,
+  array['image/jpeg', 'image/png', 'image/webp']
+)
+on conflict (id)
+do update
+set
+  public = excluded.public,
+  file_size_limit = excluded.file_size_limit,
+  allowed_mime_types = excluded.allowed_mime_types;
+
+drop policy if exists "Student photos read access" on storage.objects;
+drop policy if exists "Admin upload student photos" on storage.objects;
+drop policy if exists "Admin update student photos" on storage.objects;
+drop policy if exists "Admin delete student photos" on storage.objects;
+
+create policy "Student photos read access"
+on storage.objects
+for select
+to authenticated
+using (bucket_id = 'student-photos');
+
+create policy "Admin upload student photos"
+on storage.objects
+for insert
+to authenticated
+with check (
+  bucket_id = 'student-photos'
+  and public.is_admin()
+);
+
+create policy "Admin update student photos"
+on storage.objects
+for update
+to authenticated
+using (
+  bucket_id = 'student-photos'
+  and public.is_admin()
+)
+with check (
+  bucket_id = 'student-photos'
+  and public.is_admin()
+);
+
+create policy "Admin delete student photos"
+on storage.objects
+for delete
+to authenticated
+using (
+  bucket_id = 'student-photos'
+  and public.is_admin()
+);
+
 drop policy if exists "Admin manage all attendance" on public.attendance;
 drop policy if exists "Student read own attendance" on public.attendance;
 drop policy if exists "Attendance select access" on public.attendance;

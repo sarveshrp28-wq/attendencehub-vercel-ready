@@ -313,10 +313,6 @@ const createStudentFallback = async (payload) => {
       : null;
   const normalizedParentName = requiredParentName;
   const normalizedParentPhoneNumber = requiredParentPhoneNumber;
-  const normalizedPhotoUrl =
-    typeof student_photo_url === "string" && student_photo_url.trim()
-      ? student_photo_url.trim()
-      : null;
   const password = initial_password?.trim() || randomPassword();
   const authClient = createEphemeralSupabaseClient();
 
@@ -332,20 +328,24 @@ const createStudentFallback = async (payload) => {
     return { data: null, error: signupError };
   }
 
-  const { error: insertError } = await supabase.from("students").insert({
-    user_id: signupData?.user?.id ?? null,
-    email: normalizedEmail,
-    name,
-    class: className,
-    register_number,
-    phone_number,
-    date_of_birth,
-    gender,
-    parent_name: normalizedParentName,
-    parent_phone_number: normalizedParentPhoneNumber,
-    parent_email: normalizedParentEmail,
-    student_photo_url: normalizedPhotoUrl
-  });
+  const { data: insertedStudent, error: insertError } = await supabase
+    .from("students")
+    .insert({
+      user_id: signupData?.user?.id ?? null,
+      email: normalizedEmail,
+      name,
+      class: className,
+      register_number,
+      phone_number,
+      date_of_birth,
+      gender,
+      parent_name: normalizedParentName,
+      parent_phone_number: normalizedParentPhoneNumber,
+      parent_email: normalizedParentEmail,
+      student_photo_url: student_photo_url || null
+    })
+    .select("id")
+    .single();
 
   if (insertError) {
     return { data: null, error: insertError };
@@ -360,6 +360,7 @@ const createStudentFallback = async (payload) => {
     if (resetError) {
       return {
         data: {
+          studentId: insertedStudent?.id ?? null,
           warning:
             "Student account created in fallback mode, but welcome/reset email could not be sent.",
           generatedPassword: initial_password ? null : password
@@ -371,6 +372,7 @@ const createStudentFallback = async (payload) => {
 
   return {
     data: {
+      studentId: insertedStudent?.id ?? null,
       warning:
         "Edge function 'create-student' is missing. Student account was created in fallback mode.",
       generatedPassword: !send_welcome_email && !initial_password ? password : null
