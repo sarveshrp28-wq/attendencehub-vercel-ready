@@ -124,12 +124,13 @@ const AdminAttendance = () => {
                   <td className="py-4">
                     <select
                       className="select-field max-w-[160px]"
+                      data-empty={!statusMap[student.id]}
                       value={statusMap[student.id] || ""}
                       onChange={(event) =>
                         updateStatus(student.id, event.target.value)
                       }
                     >
-                      <option value="">Select</option>
+                      <option value="">Not selected</option>
                       {ATTENDANCE_STATUSES.map((status) => (
                         <option key={status} value={status}>
                           {status}

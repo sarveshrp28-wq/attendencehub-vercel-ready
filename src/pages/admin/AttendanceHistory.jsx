@@ -71,6 +71,7 @@ const AdminAttendanceHistory = () => {
             <label className="text-sm text-slate-300">Status</label>
             <select
               className="select-field mt-2"
+              data-empty={!filters.status}
               value={filters.status}
               onChange={(event) => handleChange("status", event.target.value)}
             >

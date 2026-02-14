@@ -286,6 +286,19 @@
       linear-gradient(120deg, rgba(45, 212, 191, 0.05), rgba(249, 115, 22, 0.05));
   }
 
+  .select-field[data-empty="true"] {
+    color: rgb(148 163 184);
+  }
+
+  .select-field option {
+    color: rgb(241 245 249);
+    background-color: rgb(15 23 42);
+  }
+
+  .select-field option[value=""] {
+    color: rgb(148 163 184);
+  }
+
   .select-field:focus {
     border-color: rgba(45, 212, 191, 0.75);
     box-shadow:
